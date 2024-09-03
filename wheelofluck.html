@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="uk">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wheel of Fortune</title>
+    <title>Колесо Фортуни</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -97,55 +97,55 @@
 </head>
 <body>
 
-<h1>Wheel of Fortune</h1>
+<h1>Колесо Фортуни</h1>
 
 <div id="loginForm">
-    <h2>Login</h2>
+    <h2>Вхід</h2>
     <form id="form">
-        <input type="text" id="nickname" placeholder="Nickname" required><br><br>
-        <input type="email" id="email" placeholder="Email" required><br><br>
-        <input type="password" id="password" placeholder="Password" required><br><br>
-        <button type="submit">Submit</button>
+        <input type="text" id="nickname" placeholder="Нікнейм" required><br><br>
+        <input type="email" id="email" placeholder="Електронна пошта" required><br><br>
+        <input type="password" id="password" placeholder="Пароль" required><br><br>
+        <button type="submit">Увійти</button>
     </form>
 </div>
 
 <div id="registerForm">
-    <h2>Register</h2>
+    <h2>Реєстрація</h2>
     <form id="register">
-        <input type="text" id="registerNickname" placeholder="Nickname" required><br><br>
-        <input type="email" id="registerEmail" placeholder="Email" required><br><br>
-        <input type="password" id="registerPassword" placeholder="Password" required><br><br>
-        <label><input type="checkbox" id="rememberMe"> Remember me</label><br><br>
-        <button type="submit">Register</button>
+        <input type="text" id="registerNickname" placeholder="Нікнейм" required><br><br>
+        <input type="email" id="registerEmail" placeholder="Електронна пошта" required><br><br>
+        <input type="password" id="registerPassword" placeholder="Пароль" required><br><br>
+        <label><input type="checkbox" id="rememberMe"> Запам'ятати мене</label><br><br>
+        <button type="submit">Зареєструватися</button>
     </form>
 </div>
 
 <div id="wheelContainer">
     <div id="balanceContainer">
-        <h3>Your Balance: $<span id="balance">0.00</span></h3>
-        <button id="addFundsButton">Add Funds</button>
+        <h3>Ваш баланс: $<span id="balance">0.00</span></h3>
+        <button id="addFundsButton">Поповнити баланс</button>
     </div>
 
     <form id="addFundsForm">
-        <input type="number" id="cardNumber" placeholder="Enter card number" required><br><br>
-        <input type="number" id="fundsInput" placeholder="Enter amount to add" required><br><br>
-        <button type="submit">Add Funds</button>
+        <input type="number" id="cardNumber" placeholder="Введіть номер картки" required><br><br>
+        <input type="number" id="fundsInput" placeholder="Введіть суму поповнення" required><br><br>
+        <button type="submit">Поповнити</button>
     </form>
 
-    <input type="number" id="betInput" placeholder="Enter your bet amount" required>
+    <input type="number" id="betInput" placeholder="Введіть суму ставки" required>
     <div id="wheel">
-        <div id="section1">Win</div>
-        <div id="section2">Lose</div>
-        <div id="section3">Lose</div>
-        <div id="section4">Win</div>
-        <div id="section5">Lose</div>
-        <div id="section6">Lose</div>
-        <div id="section7">Win</div>
-        <div id="section8">Lose</div>
-        <div id="section9">Lose</div>
-        <div id="section10">Win</div>
+        <div id="section1">Виграш</div>
+        <div id="section2">Програш</div>
+        <div id="section3">Програш</div>
+        <div id="section4">Виграш</div>
+        <div id="section5">Програш</div>
+        <div id="section6">Програш</div>
+        <div id="section7">Виграш</div>
+        <div id="section8">Програш</div>
+        <div id="section9">Програш</div>
+        <div id="section10">Виграш</div>
     </div>
-    <button id="spinButton">Spin the Wheel!</button>
+    <button id="spinButton">Крутити колесо!</button>
     <p id="result"></p>
     <div id="indicator"></div>
 </div>
@@ -170,7 +170,7 @@
         const addFundsButton = document.getElementById('addFundsButton');
         const indicator = document.getElementById('indicator');
 
-        // Check if user is already logged in
+        // Перевірка, чи користувач вже увійшов
         if (localStorage.getItem('userLoggedIn')) {
             loginForm.style.display = 'none';
             registerForm.style.display = 'none';
@@ -185,7 +185,7 @@
         
         form.addEventListener('submit', function(e) {
             e.preventDefault();
-            // Simulate login logic
+            // Симуляція логіки входу
             localStorage.setItem('userLoggedIn', 'true');
             wheelContainer.style.display = 'block';
             loginForm.style.display = 'none';
@@ -200,11 +200,11 @@
             const password = document.getElementById('registerPassword').value;
             const rememberMe = document.getElementById('rememberMe').checked;
 
-            // Simulate registration logic
+            // Симуляція логіки реєстрації
             if (rememberMe) {
                 localStorage.setItem('userLoggedIn', 'true');
             }
-            localStorage.setItem('balance', '0.00'); // Initialize balance
+            localStorage.setItem('balance', '0.00'); // Ініціалізація балансу
             loginForm.style.display = 'block';
             registerForm.style.display = 'none';
         });
@@ -217,14 +217,14 @@
             e.preventDefault();
             const funds = parseFloat(fundsInput.value);
             if (isNaN(funds) || funds <= 0) {
-                resultText.textContent = 'Please enter a valid amount to add!';
+                resultText.textContent = 'Введіть дійсну суму для додавання!';
                 return;
             }
 
-            // Simulate adding funds
+            // Симуляція додавання коштів
             balance += funds;
             balanceDisplay.textContent = balance.toFixed(2);
-            resultText.textContent = `Added $${funds.toFixed(2)} to your balance!`;
+            resultText.textContent = `Додано $${funds.toFixed(2)} на ваш баланс!`;
             fundsInput.value = '';
             cardNumberInput.value = '';
             addFundsForm.style.display = 'none';
@@ -234,41 +234,44 @@
         spinButton.addEventListener('click', function() {
             const betAmount = parseFloat(betInput.value);
             if (isNaN(betAmount) || betAmount <= 0) {
-                resultText.textContent = 'Please enter a valid bet amount!';
+                resultText.textContent = 'Введіть дійсну суму ставки!';
                 return;
             }
 
             if (betAmount > balance) {
-                resultText.textContent = 'Insufficient balance!';
+                resultText.textContent = 'Недостатньо коштів!';
                 return;
             }
 
+            // Зменшення балансу на суму ставки
+            balance -= betAmount;
+            balanceDisplay.textContent = balance.toFixed(2);
+
             const randomDeg = Math.floor(Math.random() * 360);
-            wheel.style.transition = 'transform 5s cubic-bezier(0.17, 0.67, 0.83, 0.67)';  // Fast spinning
+            wheel.style.transition = 'transform 5s cubic-bezier(0.17, 0.67, 0.83, 0.67)';  // Швидке обертання
             wheel.style.transform = `rotate(${randomDeg}deg)`;
 
             setTimeout(() => {
-                const normalizedDegree = (randomDeg % 360) / 36; // 36 degrees per section (10 sections total)
-                const outcomeIndex = Math.floor(normalizedDegree); // Get the section index (0-9)
+                const normalizedDegree = (randomDeg % 360) / 36; // 36 градусів на секцію (10 секцій всього)
+                const outcomeIndex = Math.floor(normalizedDegree); // Отримуємо індекс секції (0-9)
                 
-                const isWin = [0, 3, 6, 9].includes(outcomeIndex); // Winning sections are 0, 3, 6, 9
+                const isWin = [0, 3, 6, 9].includes(outcomeIndex); // Виграшні секції: 0, 3, 6, 9
 
                 if (isWin) {
                     const winnings = betAmount * 1.5;
                     balance += winnings;
-                    resultText.textContent = `You Win! You earned $${winnings.toFixed(2)}`;
+                    resultText.textContent = `Ви виграли! Ви заробили $${winnings.toFixed(2)}`;
                     indicator.textContent = '▲';
                     indicator.className = 'win';
                 } else {
-                    balance -= betAmount;
-                    resultText.textContent = `You Lose! You lost $${betAmount.toFixed(2)}`;
+                    resultText.textContent = `Ви програли! Ви втратили $${betAmount.toFixed(2)}`;
                     indicator.textContent = '▼';
                     indicator.className = 'lose';
                 }
 
                 balanceDisplay.textContent = balance.toFixed(2);
                 localStorage.setItem('balance', balance.toFixed(2));
-            }, 5000); // Adjusted for spinning duration
+            }, 5000); // Підлаштовано під тривалість обертання
         });
     });
 </script>
