@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wheel of Fortune</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+        #wheel {
+            margin: 20px auto;
+            width: 300px;
+            height: 300px;
+            border: 5px solid #333;
+            border-radius: 50%;
+            position: relative;
+            background: conic-gradient(
+                red 0% 36%, 
+                green 36% 56%, 
+                red 56% 72%, 
+                green 72% 92%, 
+                red 92% 100%
+            );
+        }
+        #wheel div {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            transform-origin: 100% 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 16px;
+            color: white;
+        }
+        #section1 { transform: rotate(18deg); }
+        #section2 { transform: rotate(54deg); }
+        #section3 { transform: rotate(90deg); }
+        #section4 { transform: rotate(126deg); }
+        #section5 { transform: rotate(162deg); }
+        #section6 { transform: rotate(198deg); }
+        #section7 { transform: rotate(234deg); }
+        #section8 { transform: rotate(270deg); }
+        #section9 { transform: rotate(306deg); }
+        #section10 { transform: rotate(342deg); }
+        #spinButton {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #loginForm, #registerForm {
+            display: none;
+            margin-top: 50px;
+        }
+        #wheelContainer {
+            display: none;
+            margin-top: 50px;
+        }
+        #betInput {
+            margin-top: 20px;
+            padding: 10px;
+            font-size: 16px;
+        }
+        #balanceContainer {
+            margin-top: 20px;
+        }
+        #addFundsForm {
+            display: none;
+            margin-top: 20px;
+        }
+        #addFundsButton {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        #indicator {
+            margin-top: 20px;
+            font-size: 24px;
+        }
+        #indicator.win {
+            color: green;
+        }
+        #indicator.lose {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Wheel of Fortune</h1>
+
+<div id="loginForm">
+    <h2>Login</h2>
+    <form id="form">
+        <input type="text" id="nickname" placeholder="Nickname" required><br><br>
+        <input type="email" id="email" placeholder="Email" required><br><br>
+        <input type="password" id="password" placeholder="Password" required><br><br>
+        <button type="submit">Submit</button>
+    </form>
+</div>
+
+<div id="registerForm">
+    <h2>Register</h2>
+    <form id="register">
+        <input type="text" id="registerNickname" placeholder="Nickname" required><br><br>
+        <input type="email" id="registerEmail" placeholder="Email" required><br><br>
+        <input type="password" id="registerPassword" placeholder="Password" required><br><br>
+        <label><input type="checkbox" id="rememberMe"> Remember me</label><br><br>
+        <button type="submit">Register</button>
+    </form>
+</div>
+
+<div id="wheelContainer">
+    <div id="balanceContainer">
+        <h3>Your Balance: $<span id="balance">0.00</span></h3>
+        <button id="addFundsButton">Add Funds</button>
+    </div>
+
+    <form id="addFundsForm">
+        <input type="number" id="cardNumber" placeholder="Enter card number" required><br><br>
+        <input type="number" id="fundsInput" placeholder="Enter amount to add" required><br><br>
+        <button type="submit">Add Funds</button>
+    </form>
+
+    <input type="number" id="betInput" placeholder="Enter your bet amount" required>
+    <div id="wheel">
+        <div id="section1">Win</div>
+        <div id="section2">Lose</div>
+        <div id="section3">Lose</div>
+        <div id="section4">Win</div>
+        <div id="section5">Lose</div>
+        <div id="section6">Lose</div>
+        <div id="section7">Win</div>
+        <div id="section8">Lose</div>
+        <div id="section9">Lose</div>
+        <div id="section10">Win</div>
+    </div>
+    <button id="spinButton">Spin the Wheel!</button>
+    <p id="result"></p>
+    <div id="indicator"></div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let balance = 0.00;
+
+        const form = document.getElementById('form');
+        const registerForm = document.getElementById('registerForm');
+        const loginForm = document.getElementById('loginForm');
+        const register = document.getElementById('register');
+        const wheelContainer = document.getElementById('wheelContainer');
+        const resultText = document.getElementById('result');
+        const spinButton = document.getElementById('spinButton');
+        const wheel = document.getElementById('wheel');
+        const betInput = document.getElementById('betInput');
+        const balanceDisplay = document.getElementById('balance');
+        const addFundsForm = document.getElementById('addFundsForm');
+        const fundsInput = document.getElementById('fundsInput');
+        const cardNumberInput = document.getElementById('cardNumber');
+        const addFundsButton = document.getElementById('addFundsButton');
+        const indicator = document.getElementById('indicator');
+
+        // Check if user is already logged in
+        if (localStorage.getItem('userLoggedIn')) {
+            loginForm.style.display = 'none';
+            registerForm.style.display = 'none';
+            wheelContainer.style.display = 'block';
+            balance = parseFloat(localStorage.getItem('balance')) || 0.00;
+            balanceDisplay.textContent = balance.toFixed(2);
+        } else {
+            loginForm.style.display = 'block';
+            registerForm.style.display = 'none';
+            wheelContainer.style.display = 'none';
+        }
+        
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            // Simulate login logic
+            localStorage.setItem('userLoggedIn', 'true');
+            wheelContainer.style.display = 'block';
+            loginForm.style.display = 'none';
+            balance = parseFloat(localStorage.getItem('balance')) || 0.00;
+            balanceDisplay.textContent = balance.toFixed(2);
+        });
+
+        register.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const nickname = document.getElementById('registerNickname').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+
+            // Simulate registration logic
+            if (rememberMe) {
+                localStorage.setItem('userLoggedIn', 'true');
+            }
+            localStorage.setItem('balance', '0.00'); // Initialize balance
+            loginForm.style.display = 'block';
+            registerForm.style.display = 'none';
+        });
+
+        addFundsButton.addEventListener('click', function() {
+            addFundsForm.style.display = addFundsForm.style.display === 'none' ? 'block' : 'none';
+        });
+
+        addFundsForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const funds = parseFloat(fundsInput.value);
+            if (isNaN(funds) || funds <= 0) {
+                resultText.textContent = 'Please enter a valid amount to add!';
+                return;
+            }
+
+            // Simulate adding funds
+            balance += funds;
+            balanceDisplay.textContent = balance.toFixed(2);
+            resultText.textContent = `Added $${funds.toFixed(2)} to your balance!`;
+            fundsInput.value = '';
+            cardNumberInput.value = '';
+            addFundsForm.style.display = 'none';
+            localStorage.setItem('balance', balance.toFixed(2));
+        });
+
+        spinButton.addEventListener('click', function() {
+            const betAmount = parseFloat(betInput.value);
+            if (isNaN(betAmount) || betAmount <= 0) {
+                resultText.textContent = 'Please enter a valid bet amount!';
+                return;
+            }
+
+            if (betAmount > balance) {
+                resultText.textContent = 'Insufficient balance!';
+                return;
+            }
+
+            const randomDeg = Math.floor(Math.random() * 360);
+            wheel.style.transition = 'transform 5s cubic-bezier(0.17, 0.67, 0.83, 0.67)';  // Fast spinning
+            wheel.style.transform = `rotate(${randomDeg}deg)`;
+
+            setTimeout(() => {
+                const normalizedDegree = (randomDeg % 360) / 36; // 36 degrees per section (10 sections total)
+                const outcomeIndex = Math.floor(normalizedDegree); // Get the section index (0-9)
+                
+                const isWin = [0, 3, 6, 9].includes(outcomeIndex); // Winning sections are 0, 3, 6, 9
+
+                if (isWin) {
+                    const winnings = betAmount * 1.5;
+                    balance += winnings;
+                    resultText.textContent = `You Win! You earned $${winnings.toFixed(2)}`;
+                    indicator.textContent = '▲';
+                    indicator.className = 'win';
+                } else {
+                    balance -= betAmount;
+                    resultText.textContent = `You Lose! You lost $${betAmount.toFixed(2)}`;
+                    indicator.textContent = '▼';
+                    indicator.className = 'lose';
+                }
+
+                balanceDisplay.textContent = balance.toFixed(2);
+                localStorage.setItem('balance', balance.toFixed(2));
+            }, 5000); // Adjusted for spinning duration
+        });
+    });
+</script>
+
+</body>
+</html>
