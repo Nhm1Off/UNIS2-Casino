@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Колесо Фортуни</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        button {
+            background-color: #007bff; /* Синій колір фону */
+            color: white; /* Білий колір тексту */
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px; /* Закруглені кути */
+        }
+
+        button:hover {
+            background-color: #0056b3; /* Темніший синій при наведенні */
+        }
+
+        #wheel {
+            margin: 20px auto;
+            width: 300px;
+            height: 300px;
+            border: 5px solid #333;
+            border-radius: 50%;
+            position: relative;
+            background: conic-gradient(
+                #f44336 0deg 45deg,
+                #e91e63 45deg 90deg,
+                #9c27b0 90deg 135deg,
+                #3f51b5 135deg 180deg,
+                #2196f3 180deg 225deg,
+                #00bcd4 225deg 270deg,
+                #4caf50 270deg 315deg,
+                #ffeb3b 315deg 360deg
+            );
+        }
+
+        #wheel::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 15px;
+            height: 15px;
+            background-color: #333;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .segment {
+            position: absolute;
+            width: 50%;
+            height: 50%;
+            top: 0;
+            left: 50%;
+            transform-origin: 0% 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .segment1 { transform: rotate(0deg); }
+        .segment2 { transform: rotate(45deg); }
+        .segment3 { transform: rotate(90deg); }
+        .segment4 { transform: rotate(135deg); }
+        .segment5 { transform: rotate(180deg); }
+        .segment6 { transform: rotate(225deg); }
+        .segment7 { transform: rotate(270deg); }
+        .segment8 { transform: rotate(315deg); }
+
+        .segment span {
+            position: absolute;
+            transform-origin: 100% 50%;
+        }
+
+        #spinButton {
+            margin-top: 20px;
+        }
+
+        #loginForm, #registerForm {
+            display: none;
+            margin-top: 50px;
+        }
+
+        #wheelContainer {
+            display: none;
+            margin-top: 50px;
+        }
+
+        #betInput {
+            margin-top: 20px;
+            padding: 10px;
+            font-size: 16px;
+        }
+
+        #balanceContainer {
+            margin-top: 20px;
+        }
+
+        #addFundsForm {
+            display: none;
+            margin-top: 20px;
+        }
+
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        #indicator {
+            margin-top: 20px;
+            font-size: 24px;
+        }
+
+        #indicator.win {
+            color: green;
+        }
+
+        #indicator.lose {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Колесо Фортуни</h1>
+
+<div id="loginForm">
+    <h2>Вхід</h2>
+    <form id="form">
+        <input type="text" id="nickname" placeholder="Нікнейм" required><br><br>
+        <input type="email" id="email" placeholder="Електронна пошта" required><br><br>
+        <input type="password" id="password" placeholder="Пароль" required><br><br>
+        <button type="submit">Увійти</button>
+    </form>
+</div>
+
+<div id="registerForm">
+    <h2>Реєстрація</h2>
+    <form id="register">
+        <input type="text" id="registerNickname" placeholder="Нікнейм" required><br><br>
+        <input type="email" id="registerEmail" placeholder="Електронна пошта" required><br><br>
+        <input type="password" id="registerPassword" placeholder="Пароль" required><br><br>
+        <label><input type="checkbox" id="rememberMe"> Запам'ятати мене</label><br><br>
+        <button type="submit">Зареєструватися</button>
+    </form>
+</div>
+
+<div id="wheelContainer">
+    <div id="balanceContainer">
+        <h3>Ваш баланс: $<span id="balance">0.00</span></h3>
+        <button id="addFundsButton">Поповнити баланс</button>
+    </div>
+
+    <form id="addFundsForm">
+        <input type="number" id="cardNumber" placeholder="Введіть номер картки" required><br><br>
+        <input type="number" id="fundsInput" placeholder="Введіть суму поповнення" required><br><br>
+        <button type="submit">Поповнити</button>
+    </form>
+
+    <input type="number" id="betInput" placeholder="Введіть суму ставки" required>
+    <div id="wheel">
+        <div class="segment segment1"><span>1</span></div>
+        <div class="segment segment2"><span>2</span></div>
+        <div class="segment segment3"><span>3</span></div>
+        <div class="segment segment4"><span>4</span></div>
+        <div class="segment segment5"><span>5</span></div>
+        <div class="segment segment6"><span>6</span></div>
+        <div class="segment segment7"><span>7</span></div>
+        <div class="segment segment8"><span>8</span></div>
+    </div>
+    <button id="spinButton">Крутити колесо!</button>
+    <p id="result"></p>
+    <div id="indicator"></div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        let balance = 0.00;
+
+        const form = document.getElementById('form');
+        const registerForm = document.getElementById('registerForm');
+        const loginForm = document.getElementById('loginForm');
+        const register = document.getElementById('register');
+        const wheelContainer = document.getElementById('wheelContainer');
+        const resultText = document.getElementById('result');
+        const spinButton = document.getElementById('spinButton');
+        const wheel = document.getElementById('wheel');
+        const betInput = document.getElementById('betInput');
+        const balanceDisplay = document.getElementById('balance');
+        const addFundsForm = document.getElementById('addFundsForm');
+        const fundsInput = document.getElementById('fundsInput');
+        const cardNumberInput = document.getElementById('cardNumber');
+        const addFundsButton = document.getElementById('addFundsButton');
+        const indicator = document.getElementById('indicator');
+
+        if (localStorage.getItem('userLoggedIn')) {
+            loginForm.style.display = 'none';
+            registerForm.style.display = 'none';
+            wheelContainer.style.display = 'block';
+            balance = parseFloat(localStorage.getItem('balance')) || 0.00;
+            balanceDisplay.textContent = balance.toFixed(2);
+        } else {
+            loginForm.style.display = 'block';
+            registerForm.style.display = 'none';
+            wheelContainer.style.display = 'none';
+        }
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            localStorage.setItem('userLoggedIn', 'true');
+            wheelContainer.style.display = 'block';
+            loginForm.style.display = 'none';
+            balance = parseFloat(localStorage.getItem('balance')) || 0.00;
+            balanceDisplay.textContent = balance.toFixed(2);
+        });
+
+        register.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const nickname = document.getElementById('registerNickname').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const rememberMe = document.getElementById('rememberMe').checked;
+
+            if (rememberMe) {
+                localStorage.setItem('userLoggedIn', 'true');
+            }
+            localStorage.setItem('balance', '0.00');
+            loginForm.style.display = 'block';
+            registerForm.style.display = 'none';
+        });
+
+        addFundsButton.addEventListener('click', function() {
+            addFundsForm.style.display = addFundsForm.style.display === 'none' ? 'block' : 'none';
+        });
+
+        addFundsForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const funds = parseFloat(fundsInput.value);
+            if (isNaN(funds) || funds <= 0) {
+                resultText.textContent = 'Введіть дійсну суму для додавання!';
+                return;
+            }
+
+            balance += funds;
+            balanceDisplay.textContent = balance.toFixed(2);
+            resultText.textContent = `Додано $${funds.toFixed(2)} на ваш баланс!`;
+            fundsInput.value = '';
+            cardNumberInput.value = '';
+            addFundsForm.style.display = 'none';
+            localStorage.setItem('balance', balance.toFixed(2));
+        });
+
+        spinButton.addEventListener('click', function() {
+            const betAmount = parseFloat(betInput.value);
+            if (isNaN(betAmount) || betAmount <= 0) {
+                resultText.textContent = 'Введіть дійсну суму ставки!';
+                return;
+            }
+
+            if (betAmount > balance) {
+                resultText.textContent = 'Недостатньо коштів!';
+                return;
+            }
+
+            balance -= betAmount;
+            balanceDisplay.textContent = balance.toFixed(2);
+
+            const randomDeg = Math.floor(Math.random() * 360);
+            wheel.style.transition = 'transform 5s cubic-bezier(0.17, 0.67, 0.83, 0.67)';
+            wheel.style.transform = `rotate(${randomDeg}deg)`;
+
+            setTimeout(() => {
+                const normalizedDegree = (randomDeg % 360) / 36;
+                const outcomeIndex = Math.floor(normalizedDegree);
+
+                const isWin = [0, 3, 6, 9].includes(outcomeIndex);
+
+                if (isWin) {
+                    const winnings = betAmount * 1.5;
+                    balance += winnings;
+                    resultText.textContent = `Ви виграли! Ви заробили $${winnings.toFixed(2)}`;
+                    indicator.textContent = '▲';
+                    indicator.className = 'win';
+                } else {
+                    resultText.textContent = `Ви програли! Ви втратили $${betAmount.toFixed(2)}`;
+                    indicator.textContent = '▼';
+                    indicator.className = 'lose';
+                }
+
+                balanceDisplay.textContent = balance.toFixed(2);
+                localStorage.setItem('balance', balance.toFixed(2));
+            }, 5000);
+        });
+    });
+</script>
+
+</body>
+</html>
